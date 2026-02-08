@@ -8,6 +8,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-postgres17:
+    name: Build PostgreSQL 17 Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build PostgreSQL 17 image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./for_nerdctl/postgres/17
+          file: ./for_nerdctl/postgres/17/Dockerfile
+          push: false
+          tags: for-nerdctl-postgres-17:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   build-postgres18:
     name: Build PostgreSQL 18 Docker Image
     runs-on: ubuntu-latest
