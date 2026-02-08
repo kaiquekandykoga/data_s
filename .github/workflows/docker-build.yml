@@ -8,6 +8,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-postgres17:
+    name: Build PostgreSQL 17 Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build PostgreSQL 17 image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./docker/postgres/17
+          file: ./docker/postgres/17/Dockerfile
+          push: false
+          tags: data-s-postgres-17:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   build-postgres18:
     name: Build PostgreSQL 18 Docker Image
     runs-on: ubuntu-latest
@@ -22,10 +43,31 @@ jobs:
       - name: Build PostgreSQL 18 image
         uses: docker/build-push-action@v5
         with:
-          context: ./for_nerdctl/postgres/18
-          file: ./for_nerdctl/postgres/18/Dockerfile
+          context: ./docker/postgres/18
+          file: ./docker/postgres/18/Dockerfile
           push: false
-          tags: for-nerdctl-postgres-18:test
+          tags: data-s-postgres-18:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-redis82:
+    name: Build Redis 8.2 Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Redis 8.2 image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./docker/redis/8.2
+          file: ./docker/redis/8.2/Dockerfile
+          push: false
+          tags: data-s-redis-82:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -43,9 +85,9 @@ jobs:
       - name: Build Redis 8.4 image
         uses: docker/build-push-action@v5
         with:
-          context: ./for_nerdctl/redis/8.4
-          file: ./for_nerdctl/redis/8.4/Dockerfile
+          context: ./docker/redis/8.4
+          file: ./docker/redis/8.4/Dockerfile
           push: false
-          tags: for-nerdctl-redis-84:test
+          tags: data-s-redis-84:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
