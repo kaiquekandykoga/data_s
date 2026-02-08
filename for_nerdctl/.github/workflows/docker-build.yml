@@ -1,0 +1,51 @@
+name: Docker Build Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build-postgres18:
+    name: Build PostgreSQL 18 Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build PostgreSQL 18 image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./for_nerdctl/postgres/18
+          file: ./for_nerdctl/postgres/18/Dockerfile
+          push: false
+          tags: for-nerdctl-postgres-18:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-redis84:
+    name: Build Redis 8.4 Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Redis 8.4 image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./for_nerdctl/redis/8.4
+          file: ./for_nerdctl/redis/8.4/Dockerfile
+          push: false
+          tags: for-nerdctl-redis-84:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
