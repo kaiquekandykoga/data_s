@@ -1,0 +1,25 @@
+# $ kubectl apply -f debug-pod.yaml
+# $ kubectl exec -n postgres-demo -it debug-postgres -- sh
+# inside the pod:
+# $ printenv | grep POSTGRES
+# $ pg_isready -U "$POSTGRES_USER"
+# when done, delete the pod
+# $ kubectl delete pod debug-postgres -n postgres-demo
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-postgres
+  namespace: postgres-demo
+spec:
+  restartPolicy: Never
+  containers:
+    - name: debug
+      image: postgres:18-alpine
+      command: ["sh", "-c", "echo START; sleep 3600"]
+      envFrom:
+        - configMapRef:
+            name: postgres-config
+        - secretRef:
+            name: postgres-secret
