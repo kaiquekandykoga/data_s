@@ -1,0 +1,31 @@
+# $ kubectl apply -f debug-pvc-pod.yaml
+# $ kubectl exec -n postgres-demo -it debug-pvc -- sh
+# inside the pod run:
+# $ ls -la /mnt/pgdata
+# $ cat /mnt/pgdata/PG_VERSION 2>/dev/null || true
+# $ ls -la /mnt/pgdata/pg_wal 2>/dev/null || ls -la /mnt/pgdata/pg_xlog 2>/dev/null || true
+# $ cat /mnt/pgdata/postmaster.pid 2>/dev/null || true
+# $ stat -c '%U %G %a' /mnt/pgdata || ls -ld /mnt/pgdata
+# exit shell when done, then delete pod:
+# $ exit
+# $ kubectl delete pod debug-pvc -n postgres-demo
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-pvc
+  namespace: postgres-demo
+spec:
+  restartPolicy: Never
+  containers:
+    - name: debug
+      image: alpine:3.18
+      command: ["sh", "-c", "sleep 3600"]
+      volumeMounts:
+        - name: pgdata
+          mountPath: /mnt/pgdata
+  volumes:
+    - name: pgdata
+      persistentVolumeClaim:
+        claimName: postgres-data-postgres-0

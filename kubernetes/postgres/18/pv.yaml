@@ -1,0 +1,32 @@
+# Local single-node development alternative (hostPath PersistentVolume)
+
+# If running a single-node cluster (kind/minikube)
+# and want a hostPath PV instead of dynamic provisioning,
+# create a PV + PVC and remove volumeClaimTemplates from the StatefulSet
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-postgres-local
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mnt/data/postgres18
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: postgres-demo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  volumeName: pv-postgres-local
